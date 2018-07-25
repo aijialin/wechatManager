@@ -1,0 +1,19 @@
+#! /usr/local/bin/python3
+# -*- coding: utf-8 -*-
+import os
+
+ROOT		= os.getcwd() 
+STATUSDIR	= ROOT + '/status/'
+LOGPATH		= ROOT + '/logs/'
+MYFIFO		= ROOT + '/myfifo'
+QRPATH		= ROOT + '/QR/'
+USERCONFIG	= ROOT + '/config/'
+RELOAD		= ROOT + '/'
+
+WITHDRAW = [u'\u64a4\u56de\u4e86\u4e00\u6761\u6d88\u606f', 'recalled a message'] #撤回了一条消息
+
+DEFAULTREPLYCONTENT = "你好|很高兴和你谈话"
+
+
+
+

@@ -1,0 +1,110 @@
+#! /usr/local/bin/python3
+# -*- coding: utf-8 -*-
+# 从wsgiref模块导入:
+from wsgiref.simple_server import make_server
+import os, traceback
+from servers import wechatInit
+
+def retFormat(ret):
+	'''
+		change ret to list and encode with utf-8
+	'''
+	if not ret: return None
+	if isinstance(ret, list):
+		if isinstance(ret[0], bytes): return ret
+		else:
+			ret = map(lambda m:m.encode('utf-8'), ret)
+			return ret
+	elif isinstance(ret, bytes):
+		return [ret]
+	else: return [ret.encode('utf-8')]
+
+def contentType(suffix):
+	dic = {
+		'.html'	:	('Content-Type', '%s' % 'text/html'),
+		'.jpg'	:	('Content-Type', '%s' % 'image/jpeg'),
+		'.png'	:	('Content-Type', '%s' % 'image/jpeg'),
+		'.css'	:	('Content-Type', '%s' % 'text/css'),
+		'.js'	:	('Content-Type', '%s' % 'application/javascript'),
+	}
+	if suffix not in dic:
+		return ('Content-Type', 'text/html')
+	return dic[suffix]
+
+def parsePathInfo(pathInfo):
+	try:
+		filepath, lastfilename = os.path.split(pathInfo)
+		shotname, extension = os.path.splitext(lastfilename)
+		return shotname, extension
+	except:
+		return None, None
+
+def importModule(module):
+	glob = {}
+	loc = {}
+	try:
+		exec(module, glob, loc)
+		for item in loc:
+			return loc[item]
+	except:
+		print(traceback.format_exc())
+		return False
+
+
+def application(environ, start_response):
+	content = "it's OK!"
+
+	filepath = environ['PATH_INFO'][1:] #去掉开头的/
+
+	print("filepath = ", filepath)
+	funcName, suffix = parsePathInfo(filepath)
+
+	if suffix in ['.js', '.css', '.png', '.jpg']:
+		try:
+			with open(filepath, 'rb') as f:
+				start_response('200 OK', [contentType(suffix)])
+				return retFormat(f.read())
+		except:
+			start_response('404 NOT FOUND', [contentType(suffix)])
+			return retFormat('404 NOT FOUND')
+		
+	if suffix in ['.html'] or not funcName: #访问首页
+		start_response('200 OK', [('Content-Type', 'text/html')])
+		location = "html/%s" % (filepath or "login.html")
+		print("location = ", location)
+		with open(location, 'rb') as f:
+			return retFormat(f.read())
+	
+	if suffix not in ['.request']:
+		start_response('404 OK', [('Content-Type', 'text/html')])
+		with open("html/404.html", 'rb') as f:
+			return retFormat(f.read())
+		
+	importFunc = "from servers.wechatInit import %s as execfunc" % (funcName)
+	print(importFunc)
+	execfunc = importModule(importFunc)
+
+	if not execfunc:
+		start_response('500 Service Unavailable', [('Content-Type', 'text/html')])
+		return retFormat(importFunc)
+
+
+	requestBodySize = environ.get('CONTENT_LENGTH', 0)
+	if not requestBodySize: requestBodySize = 0
+	else: requestBodySize = int(requestBodySize)
+
+	requestBody = environ["wsgi.input"].read(requestBodySize)
+	if not requestBody: ret = execfunc()
+	else: ret = execfunc(requestBody)
+
+	
+	start_response('200 OK', [('Content-Type', 'text/plain')])
+	return retFormat(ret) or retFormat(content)
+
+
+
+# 创建一个服务器，IP地址为空，端口是8000，处理函数是application:
+httpd = make_server('', 8000, application)
+print('Serving HTTP on port 8000...')
+# 开始监听HTTP请求:
+httpd.serve_forever()

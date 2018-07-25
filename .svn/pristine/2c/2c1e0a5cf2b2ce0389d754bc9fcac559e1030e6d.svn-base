@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>wechat for web</title>
+    <script src="html/js/jquery-3.2.1.min.js"></script>
+    <script src="html/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="html/css/bootstrap.css">
+
+</head>
+<style type="text/css">
+    body {
+        font-family: Helvetica Neue,Helvetica,Hiragino Sans GB,Microsoft YaHei,\\5FAE\8F6F\96C5\9ED1,Arial,sans-serif;
+        background: url(html/img/2zrdI1g.jpg) no-repeat 50%;
+        background-size: cover;
+    }
+    body, html {
+        height: 100%;
+    }
+    .login_box {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin-left: -190px;
+        margin-top: -270px;
+        border-radius: 4px;
+        -moz-border-radius: 4px;
+        -webkit-border-radius: 4px;
+        background-color: #fff;
+        width: 380px;
+        height: 540px;
+        box-shadow: 0 2px 10px #999;
+        -moz-box-shadow: #999 0 2px 10px;
+        -webkit-box-shadow: #999 0 2px 10px;
+    }
+    .login_box .qrcode {
+        position: relative;
+        text-align: center;
+    }
+    .login_box .qrcode .img {
+        display: block;
+        width: 270px;
+        height: 270px;
+        margin: 42px auto 12px;
+    }
+    .login_box .qrcode .sub_title {
+        text-align: center;
+        font-size: 20px;
+        color: #353535;
+        margin-bottom: 20px;
+    }
+    .login_box .qrcode .sub_desc {
+        text-align: center;
+        color: #888;
+        font-size: 18px;
+    }
+</style>
+<body>
+    <div class="login_box">
+        <div class="qrcode">
+            <img class="img" id="qrcode">
+            <div>
+                <p class="sub_title" id="loginStatus"></p>
+                <p class="sub_desc">网页版微信需要配合手机使用</p>
+            </div>
+            <div>
+                <div class="refresh_qrcode_mask">
+                    <i class="icon-refresh"></i>
+                </div>
+                <p class="refresh_tips"></p>
+                <button type="submit" value="wechat" id="wechat_login" class="btn btn-danger radius" style="width:30%;">点击获取二维码</button>
+            </div>
+
+        </div>
+               
+    </div>
+    <script src="html/js/wechat-login.js"></script>
+</body>
+
+</html>

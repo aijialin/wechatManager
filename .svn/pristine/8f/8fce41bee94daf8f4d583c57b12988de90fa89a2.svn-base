@@ -1,0 +1,56 @@
+#! /usr/local/bin/python3
+# -*- coding: utf-8 -*-
+
+import os, sys, time, json
+import traceback
+import itchat
+
+from wechatConfig import *
+from wechatLog import *
+
+fd = None
+
+try:
+    fd = open(MYFIFO, 'r')
+except IOError:
+    wechatLog.info("myfifo open fail")
+    os.mkfifo(MYFIFO)
+    fd = open(MYFIFO, 'r')
+
+while True:
+    time.sleep(0.5)
+    try:
+        os.waitpid(-1, os.WNOHANG) #回收子进程 非阻塞
+    except:
+        pass
+    try:
+        data = fd.read()
+        if data == '':
+            wechatLog.info("read null")
+            continue
+        wechatLog.info("read data = %s" % data)
+        data = json.loads(data)
+    except:
+        wechatLog.info(traceback.format_exc())
+        continue
+
+    userKey = data['userKey']
+
+    if userKey:
+        #开始启动进程去处理业务
+        pid = os.fork()
+
+        if pid == 0: # 子进程
+            fd.close() #关闭管道
+            child_pid = os.getpid()
+
+            if os.execlp('python3', 'python3', 'wechatProcess.py', userKey, str(child_pid)) == -1:
+                sys.exit() 
+        elif pid > 0:
+            pass
+        else:
+            wechatLog.info("fork error userKey = " + userKey)
+            break
+    else:
+        pass
+    

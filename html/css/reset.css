@@ -1,0 +1,22 @@
+html { overflow: scroll; width: 100%; height: 100%; font-size: 100%; }
+article, aside, details, figcaption, figure, footer, header, hgroup, nav, section { display: block }
+html, body, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, form, fieldset, legend, input, label, textarea, p, blockquote, th, td { margin: 0; padding: 0; -webkit-text-size-adjust: none;-moz-text-size-adjust:none; -ms-text-size-adjust: none;-o-text-size-adjust: none;text-size-adjust: none;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);/*去除高亮*/ }
+body, textarea { font-family: Arial; font-size: 100%; line-height: 1.5; font-weight: 400; color: #444444 }
+a { text-decoration: none; color: #444444 }
+a:visited {color: #444444; }
+
+em, i { font-style: normal }
+h1, h2, h3, h4, h5, h6, strong { font-weight: 700 }
+label, input, select { vertical-align: middle }
+img, button { background: transparent; border: 0 none; vertical-align: middle }
+ol, ul { list-style: none }
+table, th, td, fieldset, legend { font-weight: 400; border: 0 none; border-collapse: collapse }
+/**{ -webkit-tap-highlight-color: rgba(0,0,0,0); -webkit-touch-callout: none }*/
+input[type=text], input[type=password], input[type=number], input[type=email], input[type=search], input[type=tel] { vertical-align: middle; outline: 0; -webkit-appearance: none }
+input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+color:#bbb;
+}
+select { outline: 0; -webkit-appearance: none }
+textarea { display: block; padding: 5px; font-size: 15px; border: 1px solid #d7d7d7; outline: 0; border-radius: 3px; background: -webkit-linear-gradient(#ededed 0, #fff 5%) }
+body { background-color: #F2F2F2; }

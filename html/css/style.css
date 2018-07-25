@@ -1,0 +1,76 @@
+@media screen and (max-width:800px){
+	.page_container {
+		margin:0 auto;
+		width:100%;
+		padding: 20px 0;
+	}
+}
+@media screen and (min-width:801px){
+	.page_container {
+		width:80%;	
+		margin:20px auto 0;
+		padding: 20px;
+	} 
+}
+.page_container {
+	box-shadow: 0px 5px 5px #ada9a9;
+	border: 1px solid #ada9a9; 
+	overflow: hidden;
+}
+.table th{
+	writing-mode:lr-tb;
+	text-align: center;
+	vertical-align: middle;
+}
+.table td {
+	writing-mode:lr-tb;
+	text-align: center;
+	vertical-align: middle;
+}
+.top_panel {
+	margin-bottom: 20px;
+}
+.top_title {
+	text-shadow:1px 1px 4px #503b3b;
+	font-size: 25px;
+	text-align: center;
+}
+.left_show_area {
+	float: left;
+}
+.right_config_area {
+	overflow: auto;
+	float: left;
+}
+.table_desc {
+	font-size: 15px;
+	text-align: center;
+	font-weight: bold;
+}
+.changeText {
+	margin:10px 0 20px 10px;
+}
+.changeConfig {
+	margin:10px;
+}
+.clearBoth {
+	clear: both;
+}
+.changeText .changeTitle {
+	font-size: 16px;
+	color: #606d60;
+}
+.changeText .changeSayHello {
+	float: right;
+	margin: 10px;
+}
+
+.changeConfig {
+	margin-top: 40px;
+}
+.changeConfig #auto_reply {
+	font-size: 16px;
+	display: inline-block;
+	height: 31px;
+	line-height: 31px;
+}

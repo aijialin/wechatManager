@@ -1,0 +1,98 @@
+#! /usr/local/bin/python3
+# -*- coding: utf-8 -*-
+# 
+
+import time, json, sys, os
+
+from utils.funcs import funTalk
+from utils.funcs import extra
+#from utils.funcs import banRevoke
+
+from utils.wechatConfig import *
+from utils.wechatLog import *
+from utils.wechatRecord import *
+
+import utils.itchat as itchat
+from utils.itchat.content import *
+
+lastModifyTime = "" #上一次修改用户配置文件的时间
+userConfig = {}
+
+def checkAndUpdateConfig():
+    global userConfig, lastModifyTime
+    userConfigFile = initUserConfigFile()
+    testTime = time.ctime(os.path.getmtime(userConfigFile))
+    if testTime != lastModifyTime:
+        lastModifyTime = testTime
+        userConfig = getUserConfig()
+
+
+@itchat.msg_register(INCOME_MSG)
+def wechat(msg):
+    wechatLog.info(msg)
+    try:
+        wechatLog.info(msg['Type'])
+    except:
+        pass
+    #banRevoke.saveMessage(msg['Type'])
+    checkAndUpdateConfig()
+    if userConfig["jokeSwitch"] == "open": return funTalk.response(msg["Text"])
+    if userConfig["busySwitch"] == "open":
+        busyContent = userConfig["busyContent"].split('|')
+        for m in busyContent:
+            itchat.send(m, msg["FromUserName"])
+            time.sleep(1)
+        return
+
+
+
+wechatLog.info(json.dumps(sys.argv))
+userKey = sys.argv[1]
+wechatLog.info("userKey = %s" % userKey)
+if userKey == None:
+    wechatLog.info('userKey None')
+    sys.exit()
+
+#userKey = str(time.time())
+initSatatusFile(userKey) #初始化运行日志文件写入{usrKey}
+qrcodePath = initQRcodePath(userKey)
+
+
+def qrCallback(uuid, status, qrcode):
+    wechatLog.info("status=%s\tuuid = %s" % (status, uuid))
+    if status=='0' and qrcode:    
+        wechatLog.info("Please scan the QR code to log in")
+        with open(qrcodePath, 'wb') as f:
+            f.write(qrcode)
+        recordeStatus({"loginStatus":"Please scan the QR code to log in", "uuid":uuid, "qrcode":extra.relativePath(qrcodePath)})
+        #itchat.utils.print_qr(qrcodePath)
+        return
+    if status == '201':
+        recordeStatus({"loginStatus":"Please press confirm on your phone"})
+        wechatLog.info("confirm on phone")
+        return
+    if status == '200':
+        recordeStatus({"loginStatus":"Loading the contact, this may take a little while"})
+        wechatLog.info("load contact")
+        return
+    if status != '408':
+        recordeStatus({"loginStatus":"Log in time out, reloading QR code"})
+        wechatLog.info("Log in time out, reloading QR code.")
+        return
+        
+
+def loginCallback():
+    nickName = itchat.originInstance.storageClass.nickName
+    recordeStatus({"loginStatus":"Login successfully as %s" % nickName})
+    initUserConfigFile(nickName)
+    wechatLog.info("Login successfully as %s" % nickName)
+
+def exitCallback():
+    recordeStatus({"loginStatus":"exited"})
+    wechatLog.info("exit successfully")
+
+
+statusStorageDir = 'wechat.pkl'
+itchat.auto_login(qrCallback=qrCallback, loginCallback=loginCallback, 
+    exitCallback=exitCallback, hotReload=False, statusStorageDir=statusStorageDir)
+itchat.run(debug = True)

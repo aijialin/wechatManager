@@ -1,0 +1,102 @@
+document.write("<script src='html/js/jquery.cookie.js'></script>");
+
+$("#changeBusyContent").click(function() {
+    if ($(this).html() == "点击修改") {
+        $("#textareaBusyContent").removeAttr("disabled");
+        $(this).html("确定修改");
+        $(this).css({ backgroundColor: "green" });
+        return;
+    }
+    if ($(this).html() == "确定修改") {
+        $("#textareaBusyContent").attr("disabled", "disabled");
+        $(this).html("点击修改");
+        $(this).css({ backgroundColor: "#f0ad4e" });
+        var content = $("#textareaBusyContent").val();
+        console.log(content);
+        changeUserConfig("busyContent", content);
+        return;
+    }
+
+});
+
+
+$("input[type='checkbox']").change(function() {
+    if (this.checked) {
+        changeUserConfig(this.id, "open")
+    } else {
+        changeUserConfig(this.id, "close")
+    }
+});
+
+
+/**/
+function changeUserConfig(key, content) {
+    transdata = {}
+    transdata[key] = content
+    transdata["userName"] = $.cookie('userName')
+    transdata = JSON.stringify(transdata)
+    console.log(transdata)
+    $.ajax({
+        type: "POST",
+        url: $.cookie('URL') + "wechat_changeUserConfig.request",
+        data: transdata,
+        datatype: "json",
+        success: function(retData) {
+            var ret = JSON.parse(retData);
+            console.log(ret);
+            getUserConfig()
+        }
+    });
+}
+
+function praseIntroduce(introduce) {
+    introduceArray = introduce.split("|");
+    introduceJson = JSON.stringify(introduceArray);
+    return introduceJson;
+}
+
+
+function getUserConfig() {
+    $.ajax({
+        type: "POST",
+        url: $.cookie('URL') + "wechat_getUserConfig.request",
+        data: $.cookie('userName'),
+        datatype: "json",
+        success: function(retData) {
+            var ret = JSON.parse(retData);
+            $("#textareaBusyContent").html(ret.busyContent);
+            if (ret.jokeSwitch == "open") {
+                $("#joke_reply").html("<span style='color:green;'>自动闲聊已开启</span>");
+            } else if (ret.jokeSwitch == "close") {
+                $("#joke_reply").html("<span style='color:red;'>自动闲聊已关闭</span>");
+                document.getElementById('jokeSwitch').checked = false;
+            }
+            if (ret.busySwitch == "open") {
+                $("#busy_reply").html("<span style='color:green;'>忙碌状态已开启</span>");
+            } else if (ret.busySwitch == "close") {
+                $("#busy_reply").html("<span style='color:red;'>忙碌状态已关闭</span>");
+                document.getElementById('busySwitch').checked = false;
+            }
+            if (ret.banRevokeSwitch == "open") {
+                $("#ban_revoke").html("<span style='color:green;'>禁止撤回消息已开启</span>");
+            } else if (ret.busySwitch == "close") {
+                $("#ban_revoke").html("<span style='color:red;'>禁止撤回消息已关闭</span>");
+                document.getElementById('busySwitch').checked = false;
+            }
+            console.log(ret);
+        }
+    });
+}
+
+
+function initUserInfo() {
+    var userName = $.cookie('userName');
+    console.log("userName: " + userName);
+    $("#userName").html(userName);
+    getUserConfig();
+}
+
+
+$(function() {
+    initUserInfo();
+});

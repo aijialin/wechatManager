@@ -1,0 +1,90 @@
+#coding=utf-8
+
+import itchat
+import json, os, re
+import time, threading, random
+from itchat.content import *
+from itchat import config
+from itchat.core import Core
+
+from wechatConfig import *
+from wechatLog import *
+from wechatRecord import *
+from itchat.components.login import process_login_info
+
+
+hasScanfQRcode = False
+
+@itchat.msg_register([TEXT,RECORDING,PICTURE], isFriendChat=True)
+def smart_reply(msg):
+	print(msg)
+	print("nickName = ", itchat.originInstance.storageClass.nickName)
+
+	return "hello"
+          
+def qrCallback(uuid, status, qrcode):
+	
+	print("uuid", uuid)
+	print("status", status)
+	global hasScanfQRcode
+	if not hasScanfQRcode and qrcode:    
+	# scanf the qrcode
+		qrcodePath = "QR.png"
+		wechatLog.debug("scanf the qrcode")
+		with open(qrcodePath, 'wb') as f:
+			f.write(qrcode)
+
+		itchat.utils.print_qr("QR.png")
+		hasScanfQRcode = True
+		return
+	if status == '201':
+	# confirm on phone
+		#print("headImg = ", itchat.originInstance.storageClass.headImg)
+		wechatLog.debug("confirm on phone")
+		return
+	if status == '200':
+		# load contact
+		wechatLog.debug("load contact")
+		return
+
+	if status != '408':
+		wechatLog.debug("Log in time out, reloading QR code.")
+
+def loginCallback():
+	#login successfully
+    print("loginCallback")
+
+def exitCallback():
+    print("exitCallback")
+
+
+def checkLogin(self, uuid=None):
+	print("-"*20)
+	uuid = uuid or self.uuid
+	url = '%s/cgi-bin/mmwebwx-bin/login' % config.BASE_URL
+	localTime = int(time.time())
+	params = 'loginicon=true&uuid=%s&tip=1&r=%s&_=%s' % (
+	uuid, int(-localTime / 1579), localTime)
+	headers = { 'User-Agent' : config.USER_AGENT }
+	r = self.s.get(url, params=params, headers=headers)
+	regx = r'window.code=(\d+)'
+	regxForHeadImg = r"window.code=201;window.userAvatar = '(\S+)';"
+	data = re.search(regx, r.text)
+	if data and data.group(1) == '200':
+		if process_login_info(self, r.text):
+			return '200'
+		else:
+			return '400'
+	elif data:
+		if data.group(1) == '201': #get head img
+			headImg = re.search(regxForHeadImg, r.text).group(1)
+			print("get image success")
+		return data.group(1)
+	else:
+		return '400'
+	
+
+Core.check_login = checkLogin 
+
+itchat.auto_login(qrCallback=qrCallback, loginCallback=loginCallback, exitCallback=exitCallback)
+itchat.run(debug=True)
