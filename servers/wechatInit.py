@@ -15,7 +15,8 @@ def wechat_start(data=None):
     wechatLog.info(userKey)
     #开始启动进程去处理业务 使用跨平台的多进程库subprocess
     PYTHON = sys.executable
-    shell_cmd = '%s servers/wechatProcess.py %s' % (PYTHON, userKey)
+    shell_cmd = '"%s" servers/wechatProcess.py %s' % (PYTHON, userKey)
+    print(shell_cmd)
     cmd = shlex.split(shell_cmd)
     try:
         child = subprocess.Popen(args=cmd, shell=False)
