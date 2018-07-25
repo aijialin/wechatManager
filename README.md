@@ -1,7 +1,7 @@
 # wechatManager
-![py35][py35]  
+
 wechatManager是一个基于[itchat](https://github.com/littlecodersh/ItChat/blob/master/README.md)库的微信管理工具。  
-使用简单，支持windows和Liunx平台。  
+使用简单，支持windows和Liunx平台, 支持python3。  
 使用者不需要编写代码的能力即可轻松使用，轻松管理自己的微信。  
 wechatManager未修改itchat库代码，方便随着itchat更新。  
 默认使用8000端口，也可在启动时指定端口。  
