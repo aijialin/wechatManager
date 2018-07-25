@@ -1,6 +1,6 @@
 #! /usr/local/bin/python3
 # -*- coding: utf-8 -*-
-import json, time, hashlib, random, threading, subprocess, os, shlex
+import json, time, hashlib, random, threading, subprocess, os, shlex, sys
 
 import traceback
 from .utils.wechatConfig import *
@@ -14,7 +14,8 @@ def wechat_start(data=None):
     userKey = getUserKey() # 生成用户唯一key
     wechatLog.info(userKey)
     #开始启动进程去处理业务 使用跨平台的多进程库subprocess
-    shell_cmd = 'python servers/wechatProcess.py %s' % userKey
+    PYTHON = sys.executable
+    shell_cmd = '%s servers/wechatProcess.py %s' % (PYTHON, userKey)
     cmd = shlex.split(shell_cmd)
     try:
         child = subprocess.Popen(args=cmd, shell=False)

@@ -20,11 +20,7 @@ def timeTodate(timeStamp):
 	return readTime
 
 print(timeTodate(1532500288))
-
-try:
-	userKey = sys.argv[1]
-except:
-	userKey = 8000
-
-print(sys.argv[0])
-
+userKey = "sdfdsfsf"
+PYTHON = sys.executable
+shell_cmd = '%s servers/wechatProcess.py %s' % (PYTHON, userKey)
+print(shell_cmd)
