@@ -106,3 +106,8 @@ venv.bak/
 # svn
 .svn/
 go
+config/
+download/
+logs/
+status/
+test.py

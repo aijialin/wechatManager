@@ -183,3 +183,22 @@
 [2018-07-25 20:10:25] servers/wechatProcess.py 26 <module> [INFO] msg:userKey = fd0366f6bab445c74fa2ce11e7342a18 MainThread-7344 pid:3252
 [2018-07-25 20:10:25] servers/wechatProcess.py 62 qrCallback [INFO] msg:Please scan the QR code to log in MainThread-7344 pid:3252
 [2018-07-25 20:10:25] E:\Project\wechat\servers\wechatInit.py 34 wechat_start [INFO] msg:read = {"loginStatus": "Please scan the QR code to log in", "uuid": "wf-wuN1NMw==", "qrcode": "download/QR/fd0366f6bab445c74fa2ce11e7342a18.png", "userKey": "fd0366f6bab445c74fa2ce11e7342a18"} MainThread-5720 pid:4180
+[2018-07-25 22:50:27] E:\Project\wechat\servers\wechatInit.py 11 wechat_start [INFO] msg:wechat_start data=None MainThread-5832 pid:5220
+[2018-07-25 22:50:27] E:\Project\wechat\servers\wechatInit.py 15 wechat_start [INFO] msg:e3bfbc5943ef5a7f78e5186bf1dd8510 MainThread-5832 pid:5220
+[2018-07-25 22:50:27] E:\Project\wechat\servers\wechatInit.py 24 wechat_start [INFO] msg:server error userKey = e3bfbc5943ef5a7f78e5186bf1dd8510 MainThread-5832 pid:5220
+[2018-07-25 22:50:27] E:\Project\wechat\servers\wechatInit.py 25 wechat_start [INFO] msg:Traceback (most recent call last):
+  File "E:\Project\wechat\servers\wechatInit.py", line 22, in wechat_start
+    child = subprocess.Popen(args=cmd, shell=False)
+  File "D:\Program Files\python36\lib\subprocess.py", line 707, in __init__
+    restore_signals, start_new_session)
+  File "D:\Program Files\python36\lib\subprocess.py", line 990, in _execute_child
+    startupinfo)
+FileNotFoundError: [WinError 2] 系统找不到指定的文件。
+ MainThread-5832 pid:5220
+[2018-07-25 22:54:26] servers/wechatProcess.py 24 <module> [INFO] msg:["servers/wechatProcess.py"] MainThread-4864 pid:5408
+[2018-07-25 22:54:50] E:\Project\wechat\servers\wechatInit.py 11 wechat_start [INFO] msg:wechat_start data=None MainThread-5004 pid:5588
+[2018-07-25 22:54:50] E:\Project\wechat\servers\wechatInit.py 15 wechat_start [INFO] msg:d3f96c193ec43cfe777f6cbc4c846df2 MainThread-5004 pid:5588
+[2018-07-25 22:54:50] servers/wechatProcess.py 24 <module> [INFO] msg:["servers/wechatProcess.py", "d3f96c193ec43cfe777f6cbc4c846df2"] MainThread-5964 pid:5956
+[2018-07-25 22:54:50] servers/wechatProcess.py 26 <module> [INFO] msg:userKey = d3f96c193ec43cfe777f6cbc4c846df2 MainThread-5964 pid:5956
+[2018-07-25 22:54:51] servers/wechatProcess.py 62 qrCallback [INFO] msg:Please scan the QR code to log in MainThread-5964 pid:5956
+[2018-07-25 22:54:51] E:\Project\wechat\servers\wechatInit.py 36 wechat_start [INFO] msg:read = {"loginStatus": "Please scan the QR code to log in", "uuid": "wY6QS5WWyA==", "qrcode": "download/QR/d3f96c193ec43cfe777f6cbc4c846df2.png", "userKey": "d3f96c193ec43cfe777f6cbc4c846df2"} MainThread-5004 pid:5588
