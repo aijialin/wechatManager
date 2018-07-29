@@ -24,14 +24,6 @@ class Recorde():
         self.userConfigFile = USERCONFIG + '%s.json' % userName
         return self.userConfigFile
 
-
-    def initQRcodePath(self, userKey):
-        if not userKey: return None
-        if not os.path.exists(QRPATH): os.makedirs(QRPATH)
-        self.qrcodePath = QRPATH + '%s.png' % userKey
-        return self.qrcodePath
-
-
     def recordUserConfig(self, keyValue, mothod="replace"):
         filename = self.userConfigFile
         if not isinstance(keyValue, dict): return None
@@ -91,7 +83,6 @@ r = Recorde()
 initSatatusFile = r.initSatatusFile
 recordeStatus = r.recordeStatus
 recordUserConfig = r.recordUserConfig
-initQRcodePath = r.initQRcodePath
 initUserConfigFile = r.initUserConfigFile
 getUserConfig = r.getUserConfig
 relativePath = r.relativePath

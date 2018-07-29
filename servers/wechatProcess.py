@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # 
 
-import time, json, sys, os
+import time, json, sys, os, base64
 from servers.utils.wechatConfig import *
 from servers.utils.wechatLog import wechatLog
 from servers.utils.wechatRecord import *
@@ -23,7 +23,8 @@ from servers.vendor.hooks import itchat_get_QR
 
 
 lastModifyTime = "" #上一次修改用户配置文件的时间
-userConfig = {}
+userConfig = {} #用户配置文件
+maxRetryTimes = 0 #最大允许超时重新获取二维码次数
 
 
 wechatLog.info(json.dumps(sys.argv))
@@ -35,7 +36,6 @@ if userKey == None:
 
 #userKey = str(time.time())
 initSatatusFile(userKey) #初始化运行日志文件写入{usrKey}
-qrcodePath = initQRcodePath(userKey)
 
 def checkAndUpdateConfig():
     global userConfig, lastModifyTime
@@ -62,13 +62,11 @@ def wechat(msg):
 
 
 def qrCallback(uuid, status, qrcode):
-    #wechatLog.info("status=%s\tuuid = %s" % (status, uuid))
-    if status=='0' and qrcode:    
+    global maxRetryTimes
+    wechatLog.info("status=%s\tuuid = %s" % (status, uuid))
+    if status=='0' and qrcode:
         #wechatLog.info("Please scan the QR code to log in")
-        with open(qrcodePath, 'wb') as f:
-            f.write(qrcode)
-        recordeStatus({"loginStatus":"Please scan the QR code to log in", "uuid":uuid, "qrcode":relativePath(qrcodePath)})
-        #itchat.utils.print_qr(qrcodePath)
+        recordeStatus({"loginStatus":"Please scan the QR code to log in", "uuid":uuid, "qrcode":"data:image/png;base64," + base64.b64encode(qrcode).decode('utf-8')})
         return
     if status == '201':
         recordeStatus({"loginStatus":"Please press confirm on your phone"})
@@ -79,7 +77,11 @@ def qrCallback(uuid, status, qrcode):
         wechatLog.info("load contact")
         return
     if status != '408':
-        recordeStatus({"loginStatus":"Log in time out, reloading QR code"})
+        if maxRetryTimes <= 0: 
+            recordeStatus({"loginStatus": "Please refresh the page"})
+            sys.exit(1)
+        maxRetryTimes -= 1
+        recordeStatus({"loginStatus":"Log in time out, reloading QR code %d" % maxRetryTimes})
         #wechatLog.info("Log in time out, reloading QR code.")
         return
         

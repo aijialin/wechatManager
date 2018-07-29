@@ -115,3 +115,4 @@ test.py
 wechatWSGI.py
 *.pyc
 clearTempFile.py
+testItchat.py

@@ -81,6 +81,12 @@ function updataLoginState() {
                 $('#qrcode').attr({ src: ret.qrcode });
                 return
             } 
+            if (ret.loginStatus.indexOf('refresh') != -1) {
+                clearInterval(interval);
+                $('#qrcode').attr({src: "html/img/reload.jpg"});
+                $("button[type='submit']").removeAttr("disabled");
+                return
+            } 
             
         }
     });
