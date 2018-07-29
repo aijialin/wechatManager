@@ -73,7 +73,7 @@ function updataLoginState() {
                 $.cookie('loginDate', loginData);
                 $.cookie('URL', URL);
                 clearInterval(interval);
-                $('#loginStatus').html("登录成功");
+                $('#loginStatus').html("登录成功, 正在跳转管理界面...");
                 location.replace("index.html");
                 return
             }

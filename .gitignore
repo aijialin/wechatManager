@@ -106,6 +106,7 @@ venv.bak/
 # svn
 .svn/
 go
+go.sh
 config/
 download/
 logs/
@@ -113,3 +114,4 @@ status/
 test.py
 wechatWSGI.py
 *.pyc
+clearTempFile.py

@@ -125,8 +125,9 @@ function getUserConfig() {
             } else $("#myself").attr("checked","checked")
             
             if (ret.loginStatus == "exited") {
-                clearCookie()
-                alert("用户已退出, 请重新登陆")
+                clearInterval(interval);
+                clearCookie();
+                alert("用户已退出, 请重新登陆");
                 location.replace("/");
             }
             console.log(ret);
