@@ -7,6 +7,9 @@ from imp import reload
 from servers import wechatInterface
 from servers.utils.wechatLog import wechatLog
 
+
+
+
 def retFormat(ret):
 	'''
 		change ret to list and encode with utf-8
