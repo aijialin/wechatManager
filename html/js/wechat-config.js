@@ -70,13 +70,6 @@ function clearCookie(){
         console.log(key, $.cookie(key));
         $.removeCookie(key);
     }
-    /*
-    var keys=document.cookie.match(/[^ =;]+(?=\=)/g); 
-    if (keys) { 
-        for (var i = keys.length; i--;) 
-        document.cookie = keys[i] + '=0;expires=' + new Date(0).toUTCString() 
-    }
-    */
 } 
 
 
@@ -99,24 +92,28 @@ function getUserConfig() {
 
             if (ret.jokeSwitch) {
                 $("#joke_reply").html("<span style='color:green;'>自动闲聊已开启</span>");
+                document.getElementById('jokeSwitch').checked = true;
             } else {
                 $("#joke_reply").html("<span style='color:red;'>自动闲聊已关闭</span>");
                 document.getElementById('jokeSwitch').checked = false;
             }
             if (ret.busySwitch) {
                 $("#busy_reply").html("<span style='color:green;'>忙碌状态已开启</span>");
+                document.getElementById('busySwitch').checked = true;
             } else {
                 $("#busy_reply").html("<span style='color:red;'>忙碌状态已关闭</span>");
                 document.getElementById('busySwitch').checked = false;
             }
             if (ret.banRevokeSwitch) {
                 $("#ban_revoke").html("<span style='color:green;'>禁止撤回消息已开启</span>");
+                document.getElementById('banRevokeSwitch').checked = true;
             } else {
                 $("#ban_revoke").html("<span style='color:red;'>禁止撤回消息已关闭</span>");
                 document.getElementById('banRevokeSwitch').checked = false;
             }
             if (ret.verifySwitch) {
                 $("#auto_verify").html("<span style='color:green;'>自动验证好友请求已开启</span>");
+                document.getElementById('verifySwitch').checked = true;
             } else {
                 $("#auto_verify").html("<span style='color:red;'>自动验证好友请求已关闭</span>");
                 document.getElementById('verifySwitch').checked = false;

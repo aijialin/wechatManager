@@ -3,9 +3,9 @@
 import json, time, hashlib, random, threading, subprocess, os, shlex, sys
 
 import traceback
-from .utils.wechatConfig import *
-from .utils.wechatLog import *
-from .utils.wechatRecord import *
+from servers.utils.wechatConfig import *
+from servers.utils.wechatLog import wechatLog
+from servers.utils.wechatRecord import *
 
 def wechat_start(data=None):
     wechatLog.info("wechat_start data=%s" % data)
@@ -15,8 +15,8 @@ def wechat_start(data=None):
     wechatLog.info(userKey)
     #开始启动进程去处理业务 使用跨平台的多进程库subprocess
     PYTHON = sys.executable
-    shell_cmd = '"%s" servers/wechatProcess.py %s' % (PYTHON, userKey)
-    print(shell_cmd)
+    shell_cmd = '"%s" -m servers.wechatProcess %s' % (PYTHON, userKey) #let servers be a package
+    wechatLog.debug(shell_cmd)
     cmd = shlex.split(shell_cmd)
     try:
         child = subprocess.Popen(args=cmd, shell=False)
@@ -26,25 +26,11 @@ def wechat_start(data=None):
         ret['ret'] = -3;
         ret['msg'] = 'server error'
         return json.dumps(ret)
-    statusFile = initSatatusFile(userKey)
-    while not os.path.exists(statusFile): 
-        #wechatLog.info("%s not found" % statusFile)
-        continue
-    try:
-        with open(statusFile, 'r') as fd:
-            retData = fd.read()
-            wechatLog.info('read = %s' % retData)
-            retList = json.loads(retData)
-            retList['ret'] = 0
-            retData = json.dumps(retList)
-            return retData
-    except:
-        wechatLog.info("server error userKey = " + userKey)
-        wechatLog.info(traceback.format_exc())
-        ret['ret'] = -4;
-        ret['msg'] = 'server error'
-        return json.dumps(ret)
 
+    ret["loginStatus"] = "Loading the QR code, wait..."
+    ret["userKey"] = userKey
+    return json.dumps(ret)
+    
 
 def wechat_checkStatus(userKey=None):
     '''
@@ -55,6 +41,7 @@ def wechat_checkStatus(userKey=None):
     ret = {'ret':0, 'msg':'success'}
     if not userKey:
         ret['ret'] = -1
+        ret["loginStatus"] = "not init"
         ret['msg'] = 'userKey is empty'
         return json.dumps(ret)
     if isinstance(userKey, bytes): userKey = userKey.decode('utf-8')
@@ -64,9 +51,10 @@ def wechat_checkStatus(userKey=None):
             data = fd.read()
             return data
     except:
-        print(traceback.format_exc())
+        #wechatLog.info(traceback.format_exc())
         ret['ret'] = -2
-        ret['msg'] = 'userKey is wrong'
+        ret["loginStatus"] = "Loading the QR code, wait..."
+        ret['msg'] = 'check again'
         return json.dumps(ret)
 
 def getUserKey():
@@ -85,7 +73,7 @@ def wechat_getUserConfig(nickeName):
         return json.dumps(ret)
     if isinstance(nickeName, bytes): nickeName = nickeName.decode('utf-8')
     userConfigFile = initUserConfigFile(nickeName)
-    print(userConfigFile)
+    wechatLog.debug(userConfigFile)
 
     if not os.path.exists(userConfigFile):
         ret["ret"] = -2

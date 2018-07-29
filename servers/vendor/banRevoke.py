@@ -1,12 +1,12 @@
 #! /usr/local/bin/python3
 # -*- coding: utf-8 -*-
 import re, time, os
-from ..itchat.content import *
-from ..itchat import send
-from ..itchat import search_friends
+from servers.vendor.itchat.content import *
+from servers.vendor.itchat import send
+from servers.vendor.itchat import search_friends
 
-from ..wechatLog import *
-from ..wechatRecord import *
+from servers.utils.wechatLog import *
+from servers.utils.wechatRecord import *
 
 
 class Revoke():
@@ -20,9 +20,9 @@ class Revoke():
         userName = userConfig["userName"]
         if msg['Type'] in [SYSTEM, NOTE]: return #不保存此类消息
         if msg['ToUserName'] == userName: #如果消息接受者是自己
-            recordUserConfig({"recMsgCount" : 1}, "add") #接受消息数加一
+            recordUserConfig({"recMsgCount" : 1}, "count") #接受消息数加一
         elif msg["FromUserName"] == userName: #如果发送消息是自己
-            recordUserConfig({"sendMsgCount" : 1}, "add") #发送消息数加一
+            recordUserConfig({"sendMsgCount" : 1}, "count") #发送消息数加一
             return #不保存自己发送的消息
         msgId = msg['MsgId']
         msgFromUserId = msg['FromUserName']
@@ -69,7 +69,7 @@ class Revoke():
         msgId = re.search(r'\<msgid\>(.+?)\<\/msgid\>', self.msg['Content']).group(1)
         msgRecorded = self.msgLibrayDic.get(msgId, None)
         if not msgRecorded: return
-        explainInfo = "%s %s 撤回了一条%s消息" % (msgRecorded["msgCreateTime_t"], msgRecorded["msgFromNick"], msgRecorded["msgType"])
+        explainInfo = u"%s %s 撤回了一条%s消息" % (msgRecorded["msgCreateTime_t"], msgRecorded["msgFromNick"], msgRecorded["msgType"])
         toUserName = toUserName or msgRecorded['msgFromUserId']
         send(explainInfo, toUserName)
         if msgRecorded['msgType'] in [PICTURE, RECORDING, ATTACHMENT, VIDEO]:

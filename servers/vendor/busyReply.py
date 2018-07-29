@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 # 
 import time
-from ..itchat import send
-from ..itchat.content import *
-from ..wechatRecord import *
+from servers.vendor.itchat import send
+from servers.vendor.itchat.content import *
+from servers.utils.wechatRecord import *
 
 
 def response(busyContent, msg, userName):
@@ -13,6 +13,6 @@ def response(busyContent, msg, userName):
 	busyContent = busyContent.split('|')
 	for m in busyContent:
 		send(m, msg["FromUserName"])
-		recordUserConfig({"sendMsgCount" : 1}, "add") #发送消息数加一
+		recordUserConfig({"sendMsgCount" : 1}, "count") #发送消息数加一
 		time.sleep(1)
 	return

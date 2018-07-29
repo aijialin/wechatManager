@@ -3,11 +3,11 @@
 # 
 import os, datetime, time, re
 
-from ..wechatRecord import *
+from servers.utils.wechatRecord import *
 
-from ..itchat import config
-from ..itchat.components.login import process_login_info
-from ..itchat.core import Core
+from servers.vendor.itchat import config
+from servers.vendor.itchat.components.login import process_login_info
+from servers.vendor.itchat.core import Core
 
 
 

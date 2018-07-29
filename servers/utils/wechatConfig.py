@@ -13,8 +13,8 @@ USERCONFIG		= ROOT + '/config/'
 RELOAD			= ROOT + '/'
 
 
-DEFAULTREPLYCONTENT = "您好|我现在有事不在，一会再和您联系。"
-DEFAULTVERIFYCONTENT = "您好|感谢添加好友"
+DEFAULTREPLYCONTENT = u"您好|我现在有事不在，一会再和您联系。"
+DEFAULTVERIFYCONTENT = u"您好|感谢添加好友"
 
 
 

@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 # 
 import requests
-from ..itchat.content import *
-from ..itchat import send
-from ..wechatRecord import *
+from servers.vendor.itchat.content import *
+from servers.vendor.itchat import send
+from servers.utils.wechatRecord import *
 
 KEY = '60545a559b56449a98280181f505d1fe'
 def response(msg, userName):
@@ -19,7 +19,7 @@ def response(msg, userName):
     try:
         r = requests.post(apiUrl, data=data).json()
         send(r.get('text'), msg["FromUserName"])
-        recordUserConfig({"sendMsgCount" : 1}, "add") #发送消息数加一
+        recordUserConfig({"sendMsgCount" : 1}, "count") #发送消息数加一
         return
     except:
         return

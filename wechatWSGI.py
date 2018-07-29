@@ -1,10 +1,11 @@
-#! /usr/local/bin/python3
+#! /usr/bin/python3
 # -*- coding: utf-8 -*-
 # 从wsgiref模块导入:
-from wsgiref.simple_server import make_server
-import os, traceback
+from flup.server.fcgi import WSGIServer
+import os, sys, traceback
 from imp import reload
-from servers import wechatInit
+from servers import wechatInterface
+from servers.utils.wechatLog import wechatLog
 
 def retFormat(ret):
 	'''
@@ -48,18 +49,18 @@ def importModule(module):
 		for item in loc:
 			return loc[item]
 	except:
-		print(traceback.format_exc())
+		wechatLog.debug(traceback.format_exc())
 		return False
 
 def hotUpdate():
-	reload(wechatInit)
+	reload(wechatInterface)
 
 def application(environ, start_response):
 	#hotUpdate()
 	content = "OK!"
 	filepath = environ['PATH_INFO'][1:] #去掉开头的/
 
-	#print("filepath = ", filepath)
+	#wechatLog.debug("filepath = ", filepath)
 	funcName, suffix = parsePathInfo(filepath)
 	if suffix in ['.js', '.css', '.png', '.jpg']:
 		try:
@@ -73,7 +74,7 @@ def application(environ, start_response):
 	if suffix in ['.html'] or not funcName: #访问首页
 		start_response('200 OK', [('Content-Type', 'text/html')])
 		location = "html/%s" % (filepath or "login.html")
-		#print("location = ", location)
+		#wechatLog.debug("location = ", location)
 		with open(location, 'rb') as f:
 			return retFormat(f.read())
 	
@@ -82,8 +83,8 @@ def application(environ, start_response):
 		with open("html/404.html", 'rb') as f:
 			return retFormat(f.read())
 		
-	importFunc = "from servers.wechatInit import %s as execfunc" % (funcName)
-	#print(importFunc)
+	importFunc = "from servers.wechatInterface import %s as execfunc" % (funcName)
+	#wechatLog.debug(importFunc)
 	execfunc = importModule(importFunc)
 
 	if not execfunc:
@@ -101,14 +102,17 @@ def application(environ, start_response):
 	start_response('200 OK', [('Content-Type', 'text/plain')])
 	return retFormat(ret) or retFormat(content)
 
-
-
+'''
 # 创建一个服务器，IP地址为空，端口是8000，处理函数是application:
 try:
 	PORT = int(sys.argv[1])
 except:
 	PORT = 8000
 httpd = make_server('', PORT, application)
-print('Serving HTTP on port %d...' % PORT)
+wechatLog.debug('Serving HTTP on port %d...' % PORT)
+
 # 开始监听HTTP请求:
 httpd.serve_forever()
+'''
+if __name__  == '__main__':
+	WSGIServer(application).run()

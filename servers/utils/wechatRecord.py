@@ -1,8 +1,10 @@
 #! /usr/local/bin/python3
 # -*- coding: utf-8 -*-
-from .wechatConfig import *
+
 import os, json, datetime, time
 
+from servers.utils.wechatConfig import *
+from servers.utils.wechatLog import wechatLog
 
 class Recorde():
     def __init__(self):
@@ -37,9 +39,11 @@ class Recorde():
             with open(filename, 'r+') as f: 
                 old_dic = json.loads(f.read())
                 for key, value in keyValue.items():
-                    if mothod == "add":
+                    if mothod == "count" and key in old_dic:
                         old_dic[key] += value
-                    else:
+                    elif mothod == "checkkey" and key not in old_dic:
+                        old_dic[key] = value
+                    elif mothod == "replace":
                         old_dic[key] = value
                 f.seek(0)
                 f.truncate()

@@ -1,7 +1,7 @@
 #! /usr/local/bin/python3
 # -*- coding: utf-8 -*-
 import logging, json, os
-from .wechatConfig import *
+from servers.utils.wechatConfig import *
 '''
     所有的文件都采用本类的实例对象
     打印时间 文件名 函数名 第几行以及自定义等信息

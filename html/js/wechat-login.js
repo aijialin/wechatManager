@@ -14,7 +14,7 @@ $("button[type='submit']").click(function() {
             var ret = JSON.parse(retData);
             console.log(ret);
             if (ret.ret == 0) {
-                $('#qrcode').attr({ src: ret.qrcode });
+                //$('#qrcode').attr({ src: ret.qrcode });
                 $('#loginStatus').html(ret.loginStatus);
                 userKey = ret.userKey;
                 interval = setInterval("updataLoginState()", 200);
