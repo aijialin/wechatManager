@@ -3,6 +3,8 @@ document.write("<script src='html/js/jquery.cookie.js'></script>");
 var URL = document.URL;
 var userKey = '';
 var interval = null;
+var loginCode = 1
+var SENDREQ = true
 
 $("button[type='submit']").click(function() {
     //让按钮禁止
@@ -15,9 +17,11 @@ $("button[type='submit']").click(function() {
             console.log(ret);
             if (ret.ret == 0) {
                 //$('#qrcode').attr({ src: ret.qrcode });
-                $('#loginStatus').html(ret.loginStatus);
+                $('#loginStatus').html("正在生成登陆二维码...");
                 userKey = ret.userKey;
-                interval = setInterval("updataLoginState()", 200);
+                SENDREQ = true
+                updataLoginState();
+                
             } else {
                 $('#loginStatus').html(ret.msg);
             }
@@ -43,52 +47,67 @@ function getToday() {
 }
 //successfully
 function updataLoginState() {
+    if ( !SENDREQ ) return;
+    transdata = {}
+    transdata["loginCode"] = loginCode
+    transdata["userKey"] = userKey
+    transdata = JSON.stringify(transdata)
     $.ajax({
         type: "POST",
         url: URL + "wechat_checkStatus.request",
-        data: userKey,
+        data: transdata,
         datatype: "json",
+        //async:false,
         success: function(retData) {
             var ret = JSON.parse(retData);
             console.log(ret);
-            $('#loginStatus').html(ret.loginStatus);
-            if (ret.loginStatus.indexOf('scan') != -1) {
+            if (ret.loginCode < 0) { //出错后停止请求
+                SENDREQ = false;
+                loginCode = 1
+                $('#qrcode').attr({src: "html/img/reload.jpg"});
+                $("button[type='submit']").removeAttr("disabled");
+            } else if (ret.loginCode == 1) { //正在生成二维码
+                $('#loginStatus').html("正在生成登陆二维码...");
+                loginCode = ret.loginCode;
+            } else if (ret.loginCode == 2) { //请扫描
+                $('#loginStatus').html("请使用手机微信扫码登陆");
                 if ($('#qrcode').attr("src") != ret.qrcode) {
                     $('#qrcode').attr({ src: ret.qrcode });
                 }
-                return
-            }
-            if (ret.loginStatus.indexOf('confirm') != -1) {
+                loginCode = ret.loginCode;
+            } else if (ret.loginCode == 3) { //请确认
+                $('#loginStatus').html("请在手机微信上点击确认");
                 if ($('#qrcode').attr("src") != ret.headImg) {
                     $('#qrcode').attr({ src: ret.headImg });
                 }
-                return
-            }
-            if (ret.loginStatus.indexOf('successfully') != -1) {
-                var s = ret.loginStatus.indexOf('as');
-                var nickName = ret.loginStatus.substr(s+3);
+                loginCode = ret.loginCode;
+            } else if (ret.loginCode == 4) { //加载联系人
+                $('#loginStatus').html("正在加载联系人, 请稍后");
+                loginCode = ret.loginCode;
+            } else if (ret.loginCode == 5) { //登陆成功
+                $('#loginStatus').html("登陆成功, 正在跳转管理界面");
                 var loginData = getToday();
-                $.cookie('nickName', nickName);
+                $.cookie('nickName', ret.nickName);
                 $.cookie('userKey', userKey);
                 $.cookie('loginDate', loginData);
                 $.cookie('URL', URL);
-                clearInterval(interval);
-                $('#loginStatus').html("登录成功, 正在跳转管理界面...");
+                loginCode = ret.loginCode;
+                SENDREQ = false;
                 location.replace("index.html");
-                return
-            }
-            if (ret.loginStatus.indexOf('time out') != -1) {
+            } else if (ret.loginCode == 100) { //登陆超时
+                $('#loginStatus').html("登陆超时, 正在重试");
                 $('#qrcode').attr({ src: ret.qrcode });
-                return
-            } 
-            if (ret.loginStatus.indexOf('refresh') != -1) {
-                clearInterval(interval);
+                loginCode = ret.loginCode
+
+            } else if (ret.loginCode == 101) { //登陆失败
+                $('#loginStatus').html("登陆失败, 请重新获取二维码");
                 $('#qrcode').attr({src: "html/img/reload.jpg"});
                 $("button[type='submit']").removeAttr("disabled");
-                return
-            } 
-            
-        }
+                SENDREQ = false
+                loginCode = 1
+            }
+            updataLoginState();
+        },
     });
 }
 

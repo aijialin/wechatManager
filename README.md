@@ -26,7 +26,7 @@ wechatManager完全基于itchat库代码，可随着itchat更新。
 
 ## 试一试
 
-访问 [wechat.aijialin.cn](wechat.aijialin.cn) 立即体验使用wechatManager管理你的个人微信
+访问 [wechat.aijialin.cn](http://wechat.aijialin.cn) 立即体验使用wechatManager管理你的个人微信
 
 ## 如何使用
 **itchat运行需要requests, pyqrcode, pypng 库, 请先安装这些库**  
@@ -54,7 +54,7 @@ wechatManager会给你发送一些操作快捷指令，输入对应序号即可�
 ## 想让朋友们也用上?
 wechatManager使用python自带的wsgiref库，支持WSGI协议。  
 如果你有一台服务器，你完全可以将它配置在fastcgi中。    
-然后通过你配置的域名访问，例如 [wechat.aijialin.cn](wechat.aijialin.cn)
+然后通过你配置的域名访问，例如 [wechat.aijialin.cn](http://wechat.aijialin.cn)
 
 ## 运行日志
 - 程序运行后会在logs目录产生日志，方便查看。

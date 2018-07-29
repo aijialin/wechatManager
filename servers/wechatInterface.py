@@ -31,8 +31,8 @@ def wechat_start(data=None):
     ret["userKey"] = userKey
     return json.dumps(ret)
     
-
-def wechat_checkStatus(userKey=None):
+#牺牲并发性，采用长轮询的方式去获取，hold住请求， 如果有新数据才返回
+def wechat_checkStatus_old(userKey=None):
     '''
     desc:检测二维码的状态，是否扫描，是否确认登录，是否超时
     parameter:None
@@ -56,6 +56,81 @@ def wechat_checkStatus(userKey=None):
         ret["loginStatus"] = "Loading the QR code, wait..."
         ret['msg'] = 'check again'
         return json.dumps(ret)
+
+def wechat_checkStatus(transdata=None):
+    '''
+    desc:检测二维码的状态，是否扫描，是否确认登录，是否超时
+    parameter:None
+    return {ret:0, state:}
+    {
+        1: getting qrcode
+        2: scan QRcode
+        3: confirm 
+        4: load contact
+        5: success
+        100: 超时
+        101: 失败
+        负数: 参数错误
+    }
+    '''
+    ret = {'ret':0, 'msg':'success'}
+    try:
+        transdata = json.loads(transdata)
+    except:
+        ret['ret'] = -1
+        ret["loginStatus"] = "wrong pragma"
+        ret['msg'] = 'wrong pragma'
+        return json.dumps(ret)
+
+    wechatLog.debug(json.dumps(transdata))
+    maxRequestTime = 5 #一次请求最长时间为5秒
+    userKey = transdata["userKey"]
+    loginCode = transdata["loginCode"] #当前登陆阶段
+   
+    if not userKey:
+        ret['ret'] = -2
+        ret["loginStatus"] = "not init"
+        ret['msg'] = 'userKey is empty'
+        ret['loginCode'] = -1
+        return json.dumps(ret)
+    if isinstance(userKey, bytes): userKey = userKey.decode('utf-8')
+    statusFile = initSatatusFile(userKey)
+
+    while not os.path.exists(statusFile) and maxRequestTime > 0:
+        time.sleep(0.2)
+        maxRequestTime -= 0.2
+
+    if maxRequestTime <= 0:
+        ret['ret'] = 1
+        ret["loginStatus"] = "Loading the QR code, wait..."
+        ret['msg'] = 'check again'
+        ret['loginCode'] = 1
+        return json.dumps(ret)
+
+    while maxRequestTime > 0:
+        try:
+            with open(statusFile, 'r') as fd:
+                data = fd.read()
+                dataDic = json.loads(data)
+                if dataDic["loginCode"] != loginCode:
+                    return json.dumps(dataDic)
+                else:
+                    time.sleep(0.2)
+                    maxRequestTime -= 0.2
+        except:
+            wechatLog.info(traceback.format_exc())
+            ret['ret'] = -5
+            ret["loginStatus"] = "Please refresh the page..."
+            ret['loginCode'] = -1
+            ret['msg'] = 'server error'
+            return json.dumps(ret)
+
+    #wechatLog.info(traceback.format_exc())
+    ret['ret'] = 0
+    ret['loginCode'] = loginCode
+    ret['msg'] = 'try again'
+    return json.dumps(ret)
+
 
 def getUserKey():
     ran = random.random()

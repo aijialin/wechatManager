@@ -20,6 +20,6 @@ def overtime(t):
 	except:
 		os._exit(1)
 	
-task = threading.Thread(target=overtime, args=(10, ))
+task = threading.Thread(target=overtime, args=(30, ))
 task.setDaemon(True)
 task.start()

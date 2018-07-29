@@ -11,6 +11,7 @@ from servers.utils.wechatRecord import *
 import servers.vendor.itchat as itchat
 from servers.vendor.itchat.content import *
 
+from servers.vendor import alarm  #一个线程， 如果超时未登录成功，则结束这个进程
 from servers.vendor import jokeReply
 from servers.vendor import busyReply
 from servers.vendor import verifyReply
@@ -22,9 +23,9 @@ from servers.vendor.hooks import itchat_get_QR
 
 
 
-lastModifyTime = "" #上一次修改用户配置文件的时间
+lastModifyTime = 0.0 #上一次修改用户配置文件的时间
 userConfig = {} #用户配置文件
-maxRetryTimes = 0 #最大允许超时重新获取二维码次数
+maxRetryTimes = 1 #最大允许超时重新获取二维码次数
 
 
 wechatLog.info(json.dumps(sys.argv))
@@ -40,7 +41,7 @@ initSatatusFile(userKey) #初始化运行日志文件写入{usrKey}
 def checkAndUpdateConfig():
     global userConfig, lastModifyTime
     userConfigFile = initUserConfigFile()
-    testTime = time.ctime(os.path.getmtime(userConfigFile))
+    testTime = os.path.getmtime(userConfigFile)
     if testTime != lastModifyTime:
         lastModifyTime = testTime
         userConfig = getUserConfig()
@@ -66,22 +67,22 @@ def qrCallback(uuid, status, qrcode):
     wechatLog.info("status=%s\tuuid = %s" % (status, uuid))
     if status=='0' and qrcode:
         #wechatLog.info("Please scan the QR code to log in")
-        recordeStatus({"loginStatus":"Please scan the QR code to log in", "uuid":uuid, "qrcode":"data:image/png;base64," + base64.b64encode(qrcode).decode('utf-8')})
+        recordeStatus({"loginStatus":"Please scan the QR code to log in", "uuid":uuid, "qrcode":"data:image/png;base64," + base64.b64encode(qrcode).decode('utf-8'), "loginCode":2})
         return
     if status == '201':
-        recordeStatus({"loginStatus":"Please press confirm on your phone"})
+        recordeStatus({"loginStatus":"Please press confirm on your phone", "loginCode":3})
         #wechatLog.info("confirm on phone")
         return
     if status == '200':
-        recordeStatus({"loginStatus":"Loading the contact, this may take a little while"})
+        recordeStatus({"loginStatus":"Loading the contact, this may take a little while", "loginCode":4})
         wechatLog.info("load contact")
         return
     if status != '408':
         if maxRetryTimes <= 0: 
-            recordeStatus({"loginStatus": "Please refresh the page"})
+            recordeStatus({"loginStatus": "Please refresh the page", "loginCode":101})
             sys.exit(1)
         maxRetryTimes -= 1
-        recordeStatus({"loginStatus":"Log in time out, reloading QR code %d" % maxRetryTimes})
+        recordeStatus({"loginStatus":"Log in time out, reloading QR code %d" % maxRetryTimes, "loginCode":100})
         #wechatLog.info("Log in time out, reloading QR code.")
         return
         
@@ -89,7 +90,7 @@ def qrCallback(uuid, status, qrcode):
 def loginCallback():
     nickName = itchat.originInstance.storageClass.nickName
     userName = itchat.originInstance.storageClass.userName
-    recordeStatus({"loginStatus":"Login successfully as %s" % nickName})
+    recordeStatus({"loginStatus":"Login successfully as %s" % nickName, "loginCode":5, "nickName":nickName})
     initUserConfigFile(nickName)
     userConfDic1 = {
             "busyContent"       : DEFAULTREPLYCONTENT, 
