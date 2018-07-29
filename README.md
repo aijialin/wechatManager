@@ -34,7 +34,7 @@ wechatManager完全基于itchat库代码，可随着itchat更新。
 若需要改为其他端口，运行时将端口写在后面即可。  
 
 ```python
-python wechat.py 8000   
+python wechatManager.py 8000   
 ```
 2. 打开浏览器，在地址栏输入127.0.0.1:8000, 出现wechatManager页面后点击获取二维码  
 3. 扫描二维码，根据浏览器上的提示点击确认即可登陆成功。  
