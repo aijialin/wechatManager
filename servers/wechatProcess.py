@@ -16,7 +16,7 @@ from servers.vendor import jokeReply
 from servers.vendor import busyReply
 from servers.vendor import verifyReply
 from servers.vendor.operateAssistant import assistant
-from servers.vendor.banRevoke import recoke
+from servers.vendor.banRevoke import revoke
 
 from servers.vendor.hooks import itchat_check_login
 from servers.vendor.hooks import itchat_get_QR
@@ -53,10 +53,10 @@ def wechat(msg):
     userName = userConfig["userName"]
     if msg["FromUserName"] in ["newsapp"]: return #过滤掉腾讯新闻的消息
     wechatLog.info(msg)
-    recoke.saveMessage(msg, userConfig) #为了随时撤回，每一条消息都要及时保存
+    revoke.saveMessage(msg, userConfig) #为了随时撤回，每一条消息都要及时保存
     assistant.operator(msg, userName) #当用户打开文件助手时，打印操作消息
     if userConfig["verifySwitch"]: verifyReply.response(userConfig["verifyContent"], msg)
-    if userConfig["banRevokeSwitch"]: recoke.response(userConfig["revokeMsgToUser"])
+    if userConfig["banRevokeSwitch"]: revoke.response(userConfig["revokeMsgToUser"])
     if userConfig["jokeSwitch"]: return jokeReply.response(msg, userName)
     if userConfig["busySwitch"]: return busyReply.response(userConfig["busyContent"], msg, userName)
 

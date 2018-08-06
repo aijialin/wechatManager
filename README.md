@@ -8,7 +8,7 @@ wechatManager是一个基于[itchat](https://github.com/littlecodersh/ItChat/blo
 - python2/3
 
 ## 特点
-使用简单，支持windows和Liunx平台, 支持python3/2。  
+使用简单，支持windows和Linux平台, 支持python3/2。  
 使用者不需要编写代码的能力即可轻松使用，轻松管理自己的微信。  
 扫码登陆后可在手机上操作wechatManager。  
 wechatManager完全基于itchat库代码，可随着itchat更新。  

@@ -104,5 +104,5 @@ class Revoke():
 
 
 
-recoke = Revoke()
+revoke = Revoke()
 
